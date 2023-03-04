@@ -1,0 +1,20 @@
+.App {
+  display: flex;
+  flex-direction: column;
+
+  header {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+}

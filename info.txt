@@ -1,0 +1,16 @@
+Total page
+
+Total juzuk
+30
+
+Page per juzuk
+1 : 21
+2 - 29 : 20
+30: 22
+
+Pages per juzuk
+
+1 : 1 - 21
+2 : 22 - 41
+3 : 42 - 61
+
