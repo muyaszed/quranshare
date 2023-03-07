@@ -5,8 +5,13 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
 import { Button, Input } from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import {
+  generateShareText,
+  getQuranData,
+  initiateNumberOfReaders,
+} from "./helper";
 
 interface JuzukPageCount {
   jzk: number;
@@ -14,79 +19,51 @@ interface JuzukPageCount {
   totalPages: number;
 }
 
-interface Reader {
+export interface Reader {
   id: number;
   name: string;
   juzuk: JuzukPageCount[];
 }
 
-interface QuranData {
+export interface QuranData {
   juzuks: number;
   pages: number[];
   start: number;
   end: number;
 }
 
-function getQuranData(): QuranData[] {
-  return Array.from(Array(30), (_, index) => {
-    if (index === 0) {
-      return {
-        juzuks: 1,
-        start: 1,
-        end: 21,
-        pages: Array.from(Array(21), (_, pagesIndex) => pagesIndex + 1),
-      };
-    }
-    if (index === 29) {
-      return {
-        juzuks: 30,
-        start: 582,
-        end: 604,
-        pages: Array.from(Array(23), (_, pagesIndex) => pagesIndex + 582),
-      };
-    }
-    return {
-      juzuks: index + 1,
-      start: 22 + 20 * (index - 1),
-      end: 41 + 20 * (index - 1),
-      pages: Array.from(
-        Array(20),
-        (_, pagesIndex) => pagesIndex + 22 + 20 * (index - 1)
-      ),
-    };
-  }).sort((first, second) => first.juzuks - second.juzuks);
-}
-
 function App() {
   const [readers, setReaders] = useState<Reader[]>([]);
-  const [numberOfJuzuk, setNumberOfJuzuk] = useState(2);
   const [displayData, setDisplayData] = useState(false);
+  const [userJuzuzkSelect, setUserJuzukSelect] = useState(1);
+
+  function handleUserJuzukSelectChange(event: SelectChangeEvent<number>) {
+    setUserJuzukSelect(Number(event.target.value));
+  }
+
+  const columns: GridColDef[] = [
+    {
+      field: "name",
+      headerName: "Nama",
+      sortable: false,
+      flex: 0.4,
+    },
+    {
+      field: "juzuk",
+      headerName: "Mukasurat",
+      sortable: false,
+      flex: 0.6,
+      valueGetter: (params) => {
+        return params.value.filter(
+          (item: JuzukPageCount) => item.jzk === userJuzuzkSelect
+        )[0].pages;
+      },
+    },
+  ];
 
   function handleReaderSelectOnChange(e: SelectChangeEvent<number>): void {
-    const initialNumberOfReaders = Array.from<number[], Reader>(
-      Array(Number(e.target.value)),
-      (_, index) => {
-        const data = getQuranData();
-        return {
-          id: index + 1,
-          name: "",
-          juzuk: data.map((item) => ({
-            jzk: item.juzuks,
-            pages: [],
-            totalPages: 0,
-          })),
-        };
-
-        // return {
-        //   id: index + 1,
-        //   name: "",
-        //   juzuk: data.map((item) => ({
-        //     jzk: item.juzuks,
-        //     pages: [],
-        //     totalPages: 0,
-        //   })),
-        // };
-      }
+    const initialNumberOfReaders = initiateNumberOfReaders(
+      Number(e.target.value)
     );
 
     const updatedNoOfReaders = initialNumberOfReaders.map((reader) => {
@@ -106,7 +83,15 @@ function App() {
     setReaders(updatedNoOfReaders);
   }
 
-  function handleNameInputChage() {}
+  function handleNameInputChage(event: ChangeEvent<HTMLInputElement>) {
+    const userId = Number(event.currentTarget.id.split("-")[1]);
+    const value = event.currentTarget.value;
+    const newReaders = readers.map((reader) => ({
+      ...reader,
+      name: userId === reader.id ? value : reader.name,
+    }));
+    setReaders(newReaders);
+  }
 
   function calculatePagesPerJuzuk(readers: Reader[], juzuk: number) {
     const info = getQuranData();
@@ -116,12 +101,6 @@ function App() {
 
     const evenNumberOfPagesPerPerson = Math.floor(totalPages / readers.length);
     let extraPages = totalPages - evenNumberOfPagesPerPerson * readers.length;
-    console.log(
-      "Data",
-      selectedJuzuk.juzuks,
-      evenNumberOfPagesPerPerson,
-      extraPages
-    );
 
     const readersWithEvenTotalPages = readers.map((reader) => {
       return {
@@ -193,11 +172,16 @@ function App() {
     setDisplayData(true);
   }
 
-  function handleJuzukSelectOnChange(e: ChangeEvent<HTMLSelectElement>) {
-    setNumberOfJuzuk(Number(e.currentTarget.value));
+  async function handleCopyPages() {
+    const text = generateShareText(readers, userJuzuzkSelect);
+
+    if ("clipboard" in navigator) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      document.execCommand("copy", true, text);
+    }
   }
 
-  console.log(getQuranData());
   return (
     <Box sx={{ flexBox: 1 }}>
       <Grid container spacing={2}>
@@ -216,6 +200,7 @@ function App() {
             gutterBottom
             sx={{
               fontSize: "25px",
+              padding: "20px",
             }}
           >
             Quran Share
@@ -240,26 +225,9 @@ function App() {
             inputProps={{ "aria-label": "Without label" }}
           >
             <MenuItem value={0}>None</MenuItem>
-            <MenuItem value={1}>1</MenuItem>
-            <MenuItem value={2}>2</MenuItem>
-            <MenuItem value={3}>3</MenuItem>
-            <MenuItem value={4}>4</MenuItem>
-            <MenuItem value={5}>5</MenuItem>
-            <MenuItem value={6}>6</MenuItem>
-            <MenuItem value={7}>7</MenuItem>
-            <MenuItem value={8}>8</MenuItem>
-            <MenuItem value={9}>9</MenuItem>
-            <MenuItem value={10}>10</MenuItem>
-            <MenuItem value={11}>11</MenuItem>
-            <MenuItem value={12}>12</MenuItem>
-            <MenuItem value={13}>13</MenuItem>
-            <MenuItem value={14}>14</MenuItem>
-            <MenuItem value={15}>15</MenuItem>
-            <MenuItem value={16}>16</MenuItem>
-            <MenuItem value={17}>17</MenuItem>
-            <MenuItem value={18}>18</MenuItem>
-            <MenuItem value={19}>19</MenuItem>
-            <MenuItem value={20}>20</MenuItem>{" "}
+            {Array.from(Array(20), (_, index) => (
+              <MenuItem value={index + 1}>{index + 1}</MenuItem>
+            ))}
           </Select>
         </Grid>
         {readers.length !== 0 && (
@@ -273,7 +241,7 @@ function App() {
               alignItems: "center",
             }}
           >
-            {Array.from(Array(readers.length), (_, index) => (
+            {readers.map((reader, index) => (
               <Box key={`input-${index + 1}`} className="input-group">
                 <label htmlFor="number-of-reader">
                   {`Pembaca ${index + 1} `}
@@ -281,10 +249,7 @@ function App() {
                     id={`reader-${index + 1}`}
                     type="text"
                     placeholder="Nama"
-                    value={
-                      readers.find((reader) => reader.id === index + 1)?.name ??
-                      undefined
-                    }
+                    value={reader.name}
                     onChange={handleNameInputChage}
                   />
                 </label>
@@ -301,128 +266,66 @@ function App() {
             </Button>
           </Grid>
         )}
-        {displayData &&
-          readers.map((reader) => (
-            <Grid
-              item
-              xs={12}
+        {displayData && (
+          <Grid
+            item
+            xs={12}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Box
               sx={{
                 display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-evenly",
+                justifyContent: "space-between",
                 alignItems: "center",
+                width: "100%",
               }}
             >
-              <div>
-                <div>name</div>
-                <div>{reader.name}</div>
-              </div>
-              <div>
-                <div>Juzuk</div>
-                {reader.juzuk.map((singleJuzuk) => (
-                  <>
-                    <div>{singleJuzuk.jzk}</div>
-                    <div>{`Pages: ${singleJuzuk.pages}`}</div>
-                  </>
-                ))}
-              </div>
-            </Grid>
-          ))}
+              <Box sx={{ padding: "0 10px" }}>
+                <Button variant="contained" onClick={handleCopyPages}>
+                  Copy
+                </Button>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                }}
+              >
+                <Box>Pilih Juzuk</Box>
+
+                <Box>
+                  <Select
+                    labelId="juzuk-select"
+                    value={userJuzuzkSelect}
+                    onChange={handleUserJuzukSelectChange}
+                    inputProps={{ "aria-label": "Without label" }}
+                    sx={{ width: "100px", margin: "10px" }}
+                  >
+                    {Array.from(Array(30), (_, index) => (
+                      <MenuItem value={index + 1}>{index + 1}</MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+              </Box>
+            </Box>
+            <div style={{ height: 300, width: "100%" }}>
+              <DataGrid
+                rows={readers}
+                columns={columns}
+                hideFooterPagination
+                disableColumnMenu
+              />
+            </div>
+          </Grid>
+        )}
       </Grid>
     </Box>
-    // <div className="App">
-    //   <header>Quran Share</header>
-    //   <div>Quran baca bersama</div>
-    //   <div className="content">
-    //     <div className="input-group">
-    //       <label htmlFor="number-of-reader">
-    //         Pilih bilangan pembaca
-    //         <select
-    //           id="number-of-reader"
-    //           className="reader-select"
-    //           value={readers.length}
-    //           onChange={handleReaderSelectOnChange}
-    //         >
-    //           <option value={0}>None</option>
-    //           <option value={1}>1</option>
-    //           <option value={2}>2</option>
-    //           <option value={3}>3</option>
-    //           <option value={4}>4</option>
-    //           <option value={5}>5</option>
-    //           <option value={6}>6</option>
-    //           <option value={7}>7</option>
-    //           <option value={8}>8</option>
-    //           <option value={9}>9</option>
-    //           <option value={10}>10</option>
-    //           <option value={11}>11</option>
-    //           <option value={12}>12</option>
-    //           <option value={13}>13</option>
-    //           <option value={14}>14</option>
-    //           <option value={15}>15</option>
-    //           <option value={16}>16</option>
-    //           <option value={17}>17</option>
-    //           <option value={18}>18</option>
-    //           <option value={19}>19</option>
-    //           <option value={20}>20</option>
-    //         </select>
-    //       </label>
-    //     </div>
-    //     {Array.from(Array(readers.length), (_, index) => (
-    //       <div key={`input-${index + 1}`} className="input-group">
-    //         <label htmlFor="number-of-reader">
-    //           {`Nama ${index + 1} `}
-    //           <input
-    //             id={`reader-${index + 1}`}
-    //             type="text"
-    //             value={
-    //               readers.find((reader) => reader.id === index + 1)?.name ??
-    //               undefined
-    //             }
-    //             onChange={handleNameInputChage}
-    //           />
-    //         </label>
-    //       </div>
-    //     ))}
-    //     {readers.length !== 0 && (
-    //       <div className="input-group">
-    //         <label htmlFor="number-of-juzuk-per-day">
-    //           Pilih bilangan juzuk untuk sehari
-    //           <select
-    //             id="number-of-juzuk-per-day"
-    //             className="juzuk-select"
-    //             value={1}
-    //             onChange={handleJuzukSelectOnChange}
-    //           >
-    //             {getQuranData().map((item) => (
-    //               <option value={item.j}>{item.j}</option>
-    //             ))}
-    //           </select>
-    //         </label>
-    //       </div>
-    //     )}
-    //     {readers.length > 0 && (
-    //       <button onClick={handleCalculationClick}>Kira</button>
-    //     )}
-    //     {displayData &&
-    //       readers.map((reader) => (
-    //         <>
-    //           <div>
-    //             <div>name</div>
-    //             <div>{reader.name}</div>
-    //           </div>
-    //           <div>
-    //             <div>Juzuk</div>
-    //             {reader.juzuk.map((singleJuzuk) => (
-    //               <>
-    //                 <div>{singleJuzuk.jzk}</div>
-    //                 <div>{`Pages: ${singleJuzuk.pages}`}</div>
-    //               </>
-    //             ))}
-    //           </div>
-    //         </>
-    //       ))}
-    //   </div>
-    // </div>
   );
 }
 
