@@ -177,7 +177,7 @@ function App() {
 
     if ("clipboard" in navigator) {
       await navigator.clipboard.writeText(text);
-      window.location.assign("https://wa.me");
+      window.location.assign("whatsapp://app");
     } else {
       document.execCommand("copy", true, text);
     }
