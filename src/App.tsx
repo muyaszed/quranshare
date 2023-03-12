@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import "./App.scss";
 import Box from "@mui/material/Box";
@@ -36,6 +36,11 @@ function App() {
   const [readers, setReaders] = useState<Reader[]>([]);
   const [displayData, setDisplayData] = useState(false);
   const [userJuzuzkSelect, setUserJuzukSelect] = useState(1);
+  const [allowCalculation, setAllowCalculation] = useState(false);
+
+  useEffect(() => {
+    setAllowCalculation(readers.every((reader) => reader.name !== ""));
+  }, [readers]);
 
   function handleUserJuzukSelectChange(event: SelectChangeEvent<number>) {
     setUserJuzukSelect(Number(event.target.value));
@@ -62,6 +67,7 @@ function App() {
   ];
 
   function handleReaderSelectOnChange(e: SelectChangeEvent<number>): void {
+    setDisplayData(false);
     const initialNumberOfReaders = initiateNumberOfReaders(
       Number(e.target.value)
     );
@@ -184,7 +190,7 @@ function App() {
   }
 
   return (
-    <Box sx={{ flexBox: 1 }}>
+    <Box sx={{ flexBox: 1, marginBottom: "30px" }}>
       <Grid container spacing={2}>
         <Grid
           item
@@ -262,6 +268,7 @@ function App() {
               }}
               variant="contained"
               onClick={handleCalculationClick}
+              disabled={!allowCalculation}
             >
               Kira
             </Button>
@@ -279,6 +286,17 @@ function App() {
                 alignItems: "center",
               }}
             >
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Typography
+                  variant="h2"
+                  textAlign="center"
+                  sx={{
+                    fontSize: "20px",
+                  }}
+                >
+                  Senarai pembaca dan mukasurat yg perlu dibaca mengikut juzuk
+                </Typography>
+              </Box>
               <Box
                 sx={{
                   display: "flex",
@@ -294,21 +312,12 @@ function App() {
                   value={userJuzuzkSelect}
                   onChange={handleUserJuzukSelectChange}
                   inputProps={{ "aria-label": "Without label" }}
-                  sx={{ width: "100px", margin: "10px" }}
+                  sx={{ width: "100px", margin: "10px 20px" }}
                 >
                   {Array.from(Array(30), (_, index) => (
                     <MenuItem value={index + 1}>{index + 1}</MenuItem>
                   ))}
                 </Select>
-              </Box>
-
-              <Box style={{ height: 300, width: "100%" }}>
-                <DataGrid
-                  rows={readers}
-                  columns={columns}
-                  hideFooterPagination
-                  disableColumnMenu
-                />
               </Box>
             </Grid>
             <Grid
@@ -325,25 +334,27 @@ function App() {
                 },
               }}
             >
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                onClick={handleCopyPages}
-                sx={{ margin: "0 20px" }}
-              >
-                Click sini untuk copy
-              </Button>
-              {/* <Box sx={{ background: "red", padding: "10px" }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                  onClick={handleCopyPages}
-                >
-                  Copy
-                </Button>
-              </Box> */}
+              <Box style={{ height: 300, width: "100%" }}>
+                <DataGrid
+                  rows={readers}
+                  columns={columns}
+                  disableColumnMenu
+                  slots={{
+                    footer: () => (
+                      <Box sx={{ padding: "10px" }}>
+                        <Button
+                          variant="contained"
+                          size="large"
+                          fullWidth
+                          onClick={handleCopyPages}
+                        >
+                          Klik sini untuk copy maklumat ke Whatsapp
+                        </Button>
+                      </Box>
+                    ),
+                  }}
+                />
+              </Box>
             </Grid>
           </>
         )}
