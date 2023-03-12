@@ -177,6 +177,7 @@ function App() {
 
     if ("clipboard" in navigator) {
       await navigator.clipboard.writeText(text);
+      window.location.assign("https://wa.me");
     } else {
       document.execCommand("copy", true, text);
     }
@@ -267,62 +268,84 @@ function App() {
           </Grid>
         )}
         {displayData && (
-          <Grid
-            item
-            xs={12}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Box
+          <>
+            <Grid
+              item
+              xs={12}
               sx={{
                 display: "flex",
+                flexDirection: "column",
                 justifyContent: "space-between",
                 alignItems: "center",
-                width: "100%",
               }}
             >
-              <Box sx={{ padding: "0 10px" }}>
-                <Button variant="contained" onClick={handleCopyPages}>
-                  Copy
-                </Button>
-              </Box>
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
+                  width: "100%",
                 }}
               >
                 <Box>Pilih Juzuk</Box>
 
-                <Box>
-                  <Select
-                    labelId="juzuk-select"
-                    value={userJuzuzkSelect}
-                    onChange={handleUserJuzukSelectChange}
-                    inputProps={{ "aria-label": "Without label" }}
-                    sx={{ width: "100px", margin: "10px" }}
-                  >
-                    {Array.from(Array(30), (_, index) => (
-                      <MenuItem value={index + 1}>{index + 1}</MenuItem>
-                    ))}
-                  </Select>
-                </Box>
+                <Select
+                  labelId="juzuk-select"
+                  value={userJuzuzkSelect}
+                  onChange={handleUserJuzukSelectChange}
+                  inputProps={{ "aria-label": "Without label" }}
+                  sx={{ width: "100px", margin: "10px" }}
+                >
+                  {Array.from(Array(30), (_, index) => (
+                    <MenuItem value={index + 1}>{index + 1}</MenuItem>
+                  ))}
+                </Select>
               </Box>
-            </Box>
-            <div style={{ height: 300, width: "100%" }}>
-              <DataGrid
-                rows={readers}
-                columns={columns}
-                hideFooterPagination
-                disableColumnMenu
-              />
-            </div>
-          </Grid>
+
+              <Box style={{ height: 300, width: "100%" }}>
+                <DataGrid
+                  rows={readers}
+                  columns={columns}
+                  hideFooterPagination
+                  disableColumnMenu
+                />
+              </Box>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingRight: "16px",
+                "&.MuiGrid-item": {
+                  paddingLeft: "36px",
+                },
+              }}
+            >
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={handleCopyPages}
+                sx={{ margin: "0 20px" }}
+              >
+                Click sini untuk copy
+              </Button>
+              {/* <Box sx={{ background: "red", padding: "10px" }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={handleCopyPages}
+                >
+                  Copy
+                </Button>
+              </Box> */}
+            </Grid>
+          </>
         )}
       </Grid>
     </Box>
