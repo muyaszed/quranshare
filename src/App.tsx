@@ -350,6 +350,9 @@ function App() {
                         >
                           Klik sini untuk copy maklumat ke Whatsapp
                         </Button>
+                        <Box>
+                          Nota: Sila paste dimana-mana message didalam Whatsapp
+                        </Box>
                       </Box>
                     ),
                   }}
