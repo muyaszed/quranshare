@@ -12,6 +12,7 @@ import {
   getQuranData,
   initiateNumberOfReaders,
 } from "./helper";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 interface JuzukPageCount {
   jzk: number;
@@ -33,10 +34,16 @@ export interface QuranData {
 }
 
 function App() {
-  const [readers, setReaders] = useState<Reader[]>([]);
-  const [displayData, setDisplayData] = useState(false);
-  const [userJuzuzkSelect, setUserJuzukSelect] = useState(1);
+  const [userJuzuzkSelect, setUserJuzukSelect] = useLocalStorage<number>(
+    "juzuk-select",
+    1
+  );
   const [allowCalculation, setAllowCalculation] = useState(false);
+  const [readers, setReaders] = useLocalStorage<Reader[]>("readers", []);
+  const [displayData, setDisplayData] = useLocalStorage<Boolean>(
+    "display_data",
+    false
+  );
 
   useEffect(() => {
     setAllowCalculation(readers.every((reader) => reader.name !== ""));
@@ -233,7 +240,9 @@ function App() {
           >
             <MenuItem value={0}>None</MenuItem>
             {Array.from(Array(20), (_, index) => (
-              <MenuItem value={index + 1}>{index + 1}</MenuItem>
+              <MenuItem key={index} value={index + 1}>
+                {index + 1}
+              </MenuItem>
             ))}
           </Select>
         </Grid>
@@ -315,7 +324,9 @@ function App() {
                   sx={{ width: "100px", margin: "10px 20px" }}
                 >
                   {Array.from(Array(30), (_, index) => (
-                    <MenuItem value={index + 1}>{index + 1}</MenuItem>
+                    <MenuItem key={index} value={index + 1}>
+                      {index + 1}
+                    </MenuItem>
                   ))}
                 </Select>
               </Box>
