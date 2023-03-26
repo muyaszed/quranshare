@@ -88,6 +88,8 @@ function App() {
     },
   ];
 
+  //test
+
   function handleReaderSelectOnChange(e: SelectChangeEvent<number>): void {
     setDisplayData(false);
     const initialNumberOfReaders = initiateNumberOfReaders(
