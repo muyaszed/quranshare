@@ -1,4 +1,5 @@
 import { QuranData, Reader } from "./App";
+import i18n from "./i18n";
 
 export function getQuranData(): QuranData[] {
   return Array.from(Array(30), (_, index) => {
@@ -50,14 +51,14 @@ export function initiateNumberOfReaders(numberOfReaders: number) {
 }
 
 export function generateShareText(readers: Reader[], selectedJuzuk: number) {
-  const text = `Bacaan untuk hari ini
+  const text = `${i18n.t("message_header", "Bacaan untuk hari ini")}
 ******************************************
 
 Juzuk ${selectedJuzuk}
 ${readers
   .map(
     (reader) =>
-      `${reader.name} - Mukasurat: ${
+      `${reader.name} - ${i18n.t("page_header", "Mukasurat")}: ${
         reader.juzuk.filter((item) => item.jzk === selectedJuzuk)[0].pages
       }\n`
   )

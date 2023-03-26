@@ -16,6 +16,7 @@ export const resources = {
       copy_note: "Note: Please paste the copied info on any whatsapp message",
       name_header: "Name",
       page_header: "Pages",
+      message_header: "Readings for today",
     },
   },
   ms: {
@@ -36,6 +37,7 @@ export const resources = {
       copy_note: "Nota: Sila paste dimana-mana message didalam Whatsapp",
       name_header: "Nama",
       page_header: "Mukasurat",
+      message_header: "Bacaan untuk hari ini",
     },
   },
 };
