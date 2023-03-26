@@ -1,0 +1,41 @@
+export const resources = {
+  en: {
+    translation: {
+      app_description: "Quran read together",
+      select_reader: "Select number of readers",
+      selection_reader_none: "None",
+      language_select_text: "Choose language",
+      selection_language_malay: "Malay",
+      selection_language_english: "English",
+      reader_label_text: "Reader",
+      reader_placeholder: "Name",
+      calculate_button: "Calculate",
+      readers_table_title: "List of readers and pages based on juzuk",
+      juzuk_selector_label: "Select Juzuk",
+      copy_data_button: "Click here to copy info to Whatsapp",
+      copy_note: "Note: Please paste the copied info on any whatsapp message",
+      name_header: "Name",
+      page_header: "Pages",
+    },
+  },
+  ms: {
+    translation: {
+      app_description: "Quran baca bersama",
+      select_reader: "Pilih bilangan pembaca",
+      selection_reader_none: "Tiada",
+      selection_language_malay: "Melayu",
+      selection_language_english: "Inggeris",
+      language_select_text: "Pilih bahasa",
+      reader_label_text: "Pembaca",
+      reader_placeholder: "Nama",
+      calculate_button: "Kira",
+      readers_table_title:
+        "Senarai pembaca dan mukasurat yg perlu dibaca mengikut juzuk",
+      juzuk_selector_label: "Pilih Juzuk",
+      copy_data_button: "Klik sini untuk copy maklumat ke Whatsapp",
+      copy_note: "Nota: Sila paste dimana-mana message didalam Whatsapp",
+      name_header: "Nama",
+      page_header: "Mukasurat",
+    },
+  },
+};

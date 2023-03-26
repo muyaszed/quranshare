@@ -7,6 +7,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { Button, Input } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useTranslation } from "react-i18next";
 import {
   generateShareText,
   getQuranData,
@@ -33,6 +34,11 @@ export interface QuranData {
   end: number;
 }
 
+enum Language {
+  "ms" = 0,
+  "en",
+}
+
 function App() {
   const [userJuzuzkSelect, setUserJuzukSelect] = useLocalStorage<number>(
     "juzuk-select",
@@ -44,6 +50,15 @@ function App() {
     "display_data",
     false
   );
+  const [language, setLanguage] = useLocalStorage<number>(
+    "language",
+    Language.ms
+  );
+  const [t, i18n] = useTranslation();
+
+  useEffect(() => {
+    i18n.changeLanguage(Language[language]);
+  }, [i18n, language]);
 
   useEffect(() => {
     setAllowCalculation(readers.every((reader) => reader.name !== ""));
@@ -56,13 +71,13 @@ function App() {
   const columns: GridColDef[] = [
     {
       field: "name",
-      headerName: "Nama",
+      headerName: t("name_header", "Nama") as string,
       sortable: false,
       flex: 0.4,
     },
     {
       field: "juzuk",
-      headerName: "Mukasurat",
+      headerName: t("page_header", "Mukasurat") as string,
       sortable: false,
       flex: 0.6,
       valueGetter: (params) => {
@@ -196,6 +211,10 @@ function App() {
     }
   }
 
+  function handleLanguageChange(e: SelectChangeEvent<number>): void {
+    setLanguage(Number(e.target.value));
+    i18n.changeLanguage(Language[Number(e.target.value)]);
+  }
   return (
     <Box sx={{ flexBox: 1, marginBottom: "30px" }}>
       <Grid container spacing={2}>
@@ -214,12 +233,37 @@ function App() {
             gutterBottom
             sx={{
               fontSize: "25px",
-              padding: "20px",
+              padding: "20px 0 10px 0",
             }}
           >
             Quran Share
           </Typography>
-          <Typography variant="subtitle1">Quran baca bersama</Typography>
+          <Typography variant="subtitle1">
+            {t("app_description", "Quran baca bersama")}
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-around",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <Box>{t("language_select_text", "Pilih bahasa")}</Box>
+            <Select
+              value={language}
+              onChange={handleLanguageChange}
+              displayEmpty
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              <MenuItem value={0}>
+                {t("selection_language_malay", "Melayu")}
+              </MenuItem>
+              <MenuItem value={1}>
+                {t("selection_language_english", "Inggeris")}
+              </MenuItem>
+            </Select>
+          </Box>
         </Grid>
         <Grid
           item
@@ -230,7 +274,7 @@ function App() {
             alignItems: "center",
           }}
         >
-          <Box>Pilih bilangan pembaca</Box>
+          <Box>{t("select_reader", "Pilih bilangan pembaca")}</Box>
           <Select
             labelId="demo-simple-select-helper-label"
             value={readers.length}
@@ -238,7 +282,7 @@ function App() {
             displayEmpty
             inputProps={{ "aria-label": "Without label" }}
           >
-            <MenuItem value={0}>None</MenuItem>
+            <MenuItem value={0}>{t("selection_reader_none", "Tiada")}</MenuItem>
             {Array.from(Array(20), (_, index) => (
               <MenuItem key={index} value={index + 1}>
                 {index + 1}
@@ -260,11 +304,11 @@ function App() {
             {readers.map((reader, index) => (
               <Box key={`input-${index + 1}`} className="input-group">
                 <label htmlFor="number-of-reader">
-                  {`Pembaca ${index + 1} `}
+                  {`${t("reader_label_text", "Pembaca")} ${index + 1} `}
                   <Input
                     id={`reader-${index + 1}`}
                     type="text"
-                    placeholder="Nama"
+                    placeholder={t("reader_placeholder", "Nama") as string}
                     value={reader.name}
                     onChange={handleNameInputChage}
                   />
@@ -279,7 +323,7 @@ function App() {
               onClick={handleCalculationClick}
               disabled={!allowCalculation}
             >
-              Kira
+              {t("calculate_button", "Kira")}
             </Button>
           </Grid>
         )}
@@ -303,7 +347,10 @@ function App() {
                     fontSize: "20px",
                   }}
                 >
-                  Senarai pembaca dan mukasurat yg perlu dibaca mengikut juzuk
+                  {t(
+                    "readers_table_title",
+                    "Senarai pembaca dan mukasurat yg perlu dibaca mengikut juzuk"
+                  )}
                 </Typography>
               </Box>
               <Box
@@ -314,7 +361,7 @@ function App() {
                   width: "100%",
                 }}
               >
-                <Box>Pilih Juzuk</Box>
+                <Box>{t("juzuk_selector_label", "Pilih Juzuk")}</Box>
 
                 <Select
                   labelId="juzuk-select"
@@ -359,10 +406,16 @@ function App() {
                           fullWidth
                           onClick={handleCopyPages}
                         >
-                          Klik sini untuk copy maklumat ke Whatsapp
+                          {t(
+                            "copy_data_button",
+                            "Klik sini untuk copy maklumat ke Whatsapp"
+                          )}
                         </Button>
                         <Box>
-                          Nota: Sila paste dimana-mana message didalam Whatsapp
+                          {t(
+                            "copy_note",
+                            "Nota: Sila paste dimana-mana message didalam Whatsapp"
+                          )}
                         </Box>
                       </Box>
                     ),
