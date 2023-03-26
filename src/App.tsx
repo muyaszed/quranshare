@@ -236,7 +236,7 @@ function App() {
               padding: "20px 0 10px 0",
             }}
           >
-            Quran Share
+            QuranShare
           </Typography>
           <Typography variant="subtitle1">
             {t("app_description", "Quran baca bersama")}
