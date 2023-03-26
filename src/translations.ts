@@ -1,7 +1,7 @@
 export const resources = {
   en: {
     translation: {
-      app_description: "Quran read together",
+      app_description: "Reading Quran together",
       select_reader: "Select number of readers",
       selection_reader_none: "None",
       language_select_text: "Choose language",
